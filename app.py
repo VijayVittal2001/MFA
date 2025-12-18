@@ -787,7 +787,8 @@ def api_admin_user_attendance_day(user_id):
                 'status': clean_rich_formatting(str(rec.get('status', ''))),
                 'login': rec.get('login', '—'),
                 'logout': rec.get('logout', '—'),
-                'duration': rec.get('duration', '—')
+                'duration': rec.get('duration', '—'),
+                'day_label': rec.get('day_label') or '—'
             })
         else:
             today_str = datetime.now().strftime('%Y-%m-%d')
@@ -918,6 +919,7 @@ def admin_today():
                     'logout': session["logout"],
                     'duration': session["duration"],
                     'duration_minutes': session.get("duration_minutes"),
+                    'day_label': session.get("day_label") or '—',
                     'status': clean_rich_formatting(session["status"])
                 }
                 
@@ -937,6 +939,7 @@ def admin_today():
                         'login': '—',
                         'logout': '—',
                         'duration': '—',
+                        'day_label': '—',
                         'status': 'Present'
                     }
                     present_count += 1
@@ -947,6 +950,7 @@ def admin_today():
                         'login': '—',
                         'logout': '—',
                         'duration': '—',
+                        'day_label': '—',
                         'status': 'Absent'
                     }
                     absent_count += 1
@@ -989,6 +993,7 @@ def admin_logs():
                 'logout': log["logout"],
                 'duration': log["duration"],
                 'duration_minutes': log.get("duration_minutes"),
+                'day_label': log.get("day_label") or '—',
                 'status': clean_rich_formatting(log["status"])
             }
             formatted_logs.append(formatted_log)

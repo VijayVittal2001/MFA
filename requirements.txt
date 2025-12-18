@@ -1,6 +1,8 @@
-# Unified requirements for CLI + Flask
+# Ensure compatible NumPy version
+numpy<2
+
+# CLI + core dependencies
 opencv-python
-numpy
 pymongo
 python-dotenv
 rich
@@ -10,16 +12,18 @@ pydantic-settings
 insightface
 onnxruntime
 requests
+
+# Audio / voice processing
 torch
 torchaudio
 sounddevice
 pydub
+soundfile==0.12.1
+librosa==0.10.1
 pytz
 scikit-learn
 speechbrain
 
-# Versions pinned per previous Flask file
+# Flask web UI
 Flask==2.3.3
 Pillow==10.1.0
-soundfile==0.12.1
-librosa==0.10.1

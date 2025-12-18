@@ -990,11 +990,12 @@
                             <th>Login</th>
                             <th>Logout</th>
                             <th>Duration</th>
+                            <th>Day Label</th>
                             <th>Status</th>
                         </tr>
                     </thead>
                     <tbody id="todayTableBody">
-                        <tr><td colspan="6" class="loading">Loading attendance...</td></tr>
+                        <tr><td colspan="7" class="loading">Loading attendance...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -1057,11 +1058,12 @@
                             <th>Login</th>
                             <th>Logout</th>
                             <th>Duration</th>
+                            <th>Day Label</th>
                             <th>Status</th>
                         </tr>
                     </thead>
                     <tbody id="logsTableBody">
-                        <tr><td colspan="6" class="empty">Select a date to view logs</td></tr>
+                        <tr><td colspan="7" class="empty">Select a date to view logs</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -1300,7 +1302,7 @@
             
             // Display attendance data
             if (!data.attendance || data.attendance.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="empty">No attendance records for today</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" class="empty">No attendance records for today</td></tr>';
                 return;
             }
 
@@ -1311,6 +1313,7 @@
                     <td>${record.login || '—'}</td>
                     <td>${record.logout || '—'}</td>
                     <td>${record.duration || '—'}</td>
+                    <td>${record.day_label || '—'}</td>
                     <td>
                         <span class="status-badge ${(record.status.includes('Present') || record.status.includes('Pst')) ? 'status-present' : 'status-absent'}">
                             ${record.status}
@@ -1329,7 +1332,7 @@
 
             try {
                 document.getElementById('logsTableBody').innerHTML = 
-                    '<tr><td colspan="6" class="loading">Loading logs...</td></tr>';
+                    '<tr><td colspan="7" class="loading">Loading logs...</td></tr>';
 
                 const response = await fetch(`/api/admin/logs?date=${date}`);
                 if (response.ok) {
@@ -1806,6 +1809,30 @@
         document.addEventListener('DOMContentLoaded', function() {
             setTodayDates();
         });
+    function displayLogs(logs, date) {
+            const tbody = document.getElementById('logsTableBody');
+            if (!Array.isArray(logs) || logs.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="empty">No logs for ' + (date || '') + '</td></tr>';
+                document.getElementById('logsCount').textContent = '0 records';
+                return;
+            }
+            document.getElementById('logsCount').textContent = logs.length + ' records';
+            tbody.innerHTML = logs.map(record => `
+                <tr>
+                    <td><strong>${record.name}</strong></td>
+                    <td>${record.email}</td>
+                    <td>${record.login || '—'}</td>
+                    <td>${record.logout || '—'}</td>
+                    <td>${record.duration || '—'}</td>
+                    <td>${record.day_label || '—'}</td>
+                    <td>
+                        <span class="status-badge ${(record.status && record.status.includes('Present')) ? 'status-present' : 'status-absent'}">
+                            ${record.status}
+                        </span>
+                    </td>
+                </tr>
+            `).join('');
+        }
     </script>
 </body>
 </html>
