@@ -22,3 +22,4 @@ captured_images/
 
 # Secrets / config
 *.env
+captured_images/
