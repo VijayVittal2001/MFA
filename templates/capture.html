@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Face & Voice Capture</title>
+</head>
+<body>
+    <h1>Face + Voice Capture</h1>
+
+    <video id="video" autoplay width="640" height="480"></video>
+    <button id="capture-photo">Capture Photo</button>
+    <button id="start-recording">Start Recording</button>
+    <button id="stop-recording">Stop Recording</button>
+
+    <script>
+        let mediaStream = null;
+        let mediaRecorder = null;
+        let audioChunks = [];
+
+        // Access camera + microphone
+        navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+        .then(stream => { 
+            mediaStream = stream;
+            document.getElementById('video').srcObject = stream;
+        })
+        .catch(err => console.error("Cannot access camera/mic:", err));
+
+        // Capture photo
+        document.getElementById('capture-photo').addEventListener('click', async () => {
+            const video = document.getElementById('video');
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            const imageData = canvas.toDataURL('image/png');
+
+            const response = await fetch('/api/upload/photo', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ image: imageData })
+            });
+            console.log(await response.json());
+        });
+
+        // Record audio
+        document.getElementById('start-recording').addEventListener('click', () => {
+            audioChunks = [];
+            mediaRecorder = new MediaRecorder(mediaStream);
+            mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+            mediaRecorder.start();
+        });
+
+        document.getElementById('stop-recording').addEventListener('click', async () => {
+            mediaRecorder.stop();
+            mediaRecorder.onstop = async () => {
+                const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                const formData = new FormData();
+                formData.append('audio', audioBlob, 'recording.wav');
+
+                const response = await fetch('/api/upload/audio', {
+                    method: 'POST',
+                    body: formData
+                });
+                console.log(await response.json());
+            };
+        });
+    </script>
+</body>
+</html>

@@ -31,6 +31,9 @@ from services.registration_service import registration_service
 from db.session_repo import mark_session
 from db.user_repo import get_all_users
 from db.session_repo import get_report, get_today_status
+import tempfile  # For temporary storage of uploaded voice files
+import os
+from services.voice_embedding import get_voice_embedding, get_embedding_from_wav
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'biometric_kiosk_secret_2024'
@@ -1692,6 +1695,61 @@ def export_attendance_csv():
         import traceback
         traceback.print_exc()
         return jsonify({'error': f'Export failed: {str(e)}'}), 500
+
+import io
+import base64
+from PIL import Image
+
+# Create folders if not exist
+os.makedirs("captured_images", exist_ok=True)
+os.makedirs("captured_voices", exist_ok=True)
+
+# ------------------- NEW ROUTES -------------------
+
+# Render the new capture page
+@app.route("/capture")
+def capture_page():
+    return render_template("capture.html")
+
+# Save captured photo
+@app.route("/api/upload/photo", methods=["POST"])
+def upload_photo():
+    try:
+        data = request.json
+        image_data = data["image"].split(",")[1]
+        image_bytes = io.BytesIO(base64.b64decode(image_data))
+        image = Image.open(image_bytes)
+        filename = f"captured_images/photo_{len(os.listdir('captured_images')) + 1}.png"
+        image.save(filename)
+        return jsonify({"status": "success", "file": filename})
+    except Exception as e:
+        print(f"Photo upload error: {e}")
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+# Save recorded audio
+import os
+os.makedirs("captured_voices", exist_ok=True)
+
+@app.route("/api/upload/audio", methods=["POST"])
+def upload_audio():   # Keep the name same
+    if 'audio' not in request.files:
+        return jsonify({'status': 'error', 'message': 'No audio uploaded'}), 400
+    
+    audio = request.files['audio']
+    filename = f"captured_voices/audio_{len(os.listdir('captured_voices'))+1}.wav"
+    audio.save(filename)
+
+    # Optional: call your voice verification function here
+    # result = verify_voice_live_flask(filename)
+
+    return jsonify({'status': 'success', 'file': filename})
+
+
+@app.route("/capture_voice")
+def capture_voice_page():
+    return render_template("capture_voice.html")
+
+
 
 if __name__ == '__main__':
     print("🚀 BIOMETRIC KIOSK WEB SYSTEM STARTING...")

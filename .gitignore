@@ -1,25 +1,21 @@
-# Python bytecode
+# Python caches
 __pycache__/
-*.py[cod]
-*$py.class
+*.pyc
+*.pyo
+*.pyd
 
 # Virtual environments
-env/
-env1/
-env2/
 env3/
 venv/
+*.env
 
 # OS files
 .DS_Store
 Thumbs.db
 
-# Captured images (your dataset)
+# Captured media
 captured_images/
+captured_voices/
 
 # Logs
 *.log
-
-# Secrets / config
-*.env
-captured_images/
