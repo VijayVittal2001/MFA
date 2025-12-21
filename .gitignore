@@ -1,21 +1,54 @@
-# Python caches
+# Python
 __pycache__/
-*.pyc
+*.py[cod]
 *.pyo
 *.pyd
-
-# Virtual environments
-env3/
-venv/
 *.env
+env3/
+*.sqlite
+*.db
+
+# Virtual environment
+venv/
+env/
+ENV/
 
 # OS files
 .DS_Store
 Thumbs.db
-
-# Captured media
-captured_images/
-captured_voices/
+desktop.ini
 
 # Logs
 *.log
+
+# Byte-compiled / cache files
+*.pyc
+*.pyo
+*.pyd
+
+# Captured media (optional: you can keep this locally, not in Git)
+captured_images/
+captured_voices/
+voice_backups/
+
+# Pretrained models (optional: keep large files out of Git, push manually if needed)
+models/
+pretrained_models/
+
+# Jupyter / IPython
+.ipynb_checkpoints/
+
+# Docker (if you have Dockerfile/build files)
+*.dockerignore
+*.dockerfile
+
+# IDE/editor settings
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Package managers
+*.egg-info/
+dist/
+build/
